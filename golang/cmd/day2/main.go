@@ -6,14 +6,11 @@ import (
 	"io"
 	"strings"
 
-	"github.com/ventsislav-georgiev/advent-of-code-22/pkg/aoc"
+	"github.com/ventsislav-georgiev/advent-of-code-22/golang/pkg/aoc"
 )
 
 func main() {
-	task := aoc.GetTask(task1, task2)
-	in := aoc.GetInput(2)
-	defer in.Close()
-	task(in)
+	aoc.Exec(task1, task2)
 }
 
 var points = map[string]int{

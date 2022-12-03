@@ -7,14 +7,11 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/ventsislav-georgiev/advent-of-code-22/pkg/aoc"
+	"github.com/ventsislav-georgiev/advent-of-code-22/golang/pkg/aoc"
 )
 
 func main() {
-	task := aoc.GetTask(task1, task2)
-	in := aoc.GetInput(1)
-	defer in.Close()
-	task(in)
+	aoc.Exec(task1, task2)
 }
 
 func task1(in io.ReadCloser) {
@@ -26,6 +23,7 @@ func task1(in io.ReadCloser) {
 		line := scanner.Text()
 		if line == "" {
 			cur = 0
+			continue
 		}
 
 		val, _ := strconv.Atoi(line)
@@ -51,6 +49,7 @@ func task2(in io.ReadCloser) {
 		if line == "" {
 			totals = append(totals, cur)
 			cur = 0
+			continue
 		}
 
 		val, _ := strconv.Atoi(line)

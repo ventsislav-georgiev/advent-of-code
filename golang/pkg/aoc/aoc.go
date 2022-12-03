@@ -9,22 +9,18 @@ import (
 	"os"
 )
 
-func GetTask(tasks ...func(io.ReadCloser)) func(io.ReadCloser) {
-	tID := flag.Int("task", 1, "")
+func Exec(tasks ...func(io.ReadCloser)) {
+	day := flag.Int("day", 1, "")
+	taskNumber := flag.Int("task", 1, "")
 	flag.Parse()
 
-	var task func(io.ReadCloser)
-	switch *tID {
-	case 1:
-		task = tasks[0]
-	case 2:
-		task = tasks[1]
-	}
-
-	return task
+	task := tasks[*taskNumber-1]
+	in := getInput(*day)
+	defer in.Close()
+	task(in)
 }
 
-func GetInput(day int) io.ReadCloser {
+func getInput(day int) io.ReadCloser {
 	url := fmt.Sprintf("https://adventofcode.com/2022/day/%d/input", day)
 
 	client := &http.Client{}

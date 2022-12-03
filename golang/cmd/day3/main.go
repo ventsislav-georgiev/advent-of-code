@@ -5,14 +5,11 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/ventsislav-georgiev/advent-of-code-22/pkg/aoc"
+	"github.com/ventsislav-georgiev/advent-of-code-22/golang/pkg/aoc"
 )
 
 func main() {
-	task := aoc.GetTask(task1, task2)
-	in := aoc.GetInput(3)
-	defer in.Close()
-	task(in)
+	aoc.Exec(task1, task2)
 }
 
 func task1(in io.ReadCloser) {
