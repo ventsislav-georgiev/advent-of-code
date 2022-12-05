@@ -10,8 +10,8 @@ import (
 )
 
 func Exec(tasks ...func(io.ReadCloser)) {
-	day := flag.Int("day", 1, "")
-	taskNumber := flag.Int("task", 1, "")
+	day := flag.Int("day", 5, "")
+	taskNumber := flag.Int("task", 2, "")
 	flag.Parse()
 
 	task := tasks[*taskNumber-1]
