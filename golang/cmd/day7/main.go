@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"sort"
 	"strconv"
 	"strings"
 
@@ -16,66 +15,34 @@ func main() {
 }
 
 func task1(in io.Reader) {
-	root := parse(in)
-
-	total := 0
-	for _, size := range root.Sizes() {
+	dsizes := parse(in)
+	var total uint
+	for _, size := range dsizes {
 		if size <= 100000 {
 			total += size
 		}
 	}
-
 	fmt.Println(total)
 }
 
 func task2(in io.Reader) {
-	root := parse(in)
-
-	sizes := root.Sizes()
-	required := 30000000 - (70000000 - sizes[0])
-	sort.Ints(sizes)
-
-	for _, size := range sizes {
+	dsizes := parse(in)
+	required := 30000000 - (70000000 - dsizes["/"])
+	min := ^uint(0)
+	for _, size := range dsizes {
 		if size >= required {
-			fmt.Println(size)
-			break
+			if size < min {
+				min = size
+			}
 		}
 	}
+	fmt.Println(min)
 }
 
-type Dir struct {
-	parent    *Dir
-	dirs      map[string]*Dir
-	filesSize int
-	size      int
-}
-
-func (d *Dir) Size() int {
-	if d.size != 0 {
-		return d.size
-	}
-	d.size = d.filesSize
-	for _, child := range d.dirs {
-		d.size += child.Size()
-	}
-	return d.size
-}
-
-func (d *Dir) Sizes() []int {
-	sizes := []int{}
-	sizes = append(sizes, d.Size())
-	for _, child := range d.dirs {
-		sizes = append(sizes, child.Sizes()...)
-	}
-	return sizes
-}
-
-func parse(in io.Reader) *Dir {
+func parse(in io.Reader) map[string]uint {
 	scanner := bufio.NewScanner(in)
-	node := &Dir{
-		dirs: map[string]*Dir{},
-	}
-	root := node
+	pwd := []string{"/"}
+	dsizes := map[string]uint{}
 
 	for scanner.Scan() {
 		cmd := scanner.Text()
@@ -85,25 +52,15 @@ func parse(in io.Reader) *Dir {
 				continue
 			}
 			if cmd[5] == '/' {
-				node = root
+				pwd = []string{"/"}
 				continue
 			}
 			if cmd[5] == '.' {
-				node = node.parent
+				pwd = pwd[:len(pwd)-1]
 				continue
 			}
 
-			name := cmd[5:]
-			child, exists := node.dirs[name]
-			if !exists {
-				child = &Dir{
-					parent: node,
-					dirs:   map[string]*Dir{},
-				}
-				node.dirs[name] = child
-			}
-
-			node = child
+			pwd = append(pwd, cmd[5:])
 			continue
 		}
 
@@ -112,8 +69,10 @@ func parse(in io.Reader) *Dir {
 		}
 
 		fsize, _ := strconv.Atoi(strings.Fields(cmd)[0])
-		node.filesSize += fsize
+		for i := range pwd {
+			dsizes[strings.Join(pwd[:i+1], "/")] += uint(fsize)
+		}
 	}
 
-	return root
+	return dsizes
 }
