@@ -12,7 +12,7 @@ func main() {
 	aoc.Exec(task1, task2)
 }
 
-func task1(in io.ReadCloser) {
+func task1(in io.Reader) {
 	r := bufio.NewReader(in)
 	ch1, _, _ := r.ReadRune()
 	ch2, _, _ := r.ReadRune()
@@ -37,7 +37,7 @@ func task1(in io.ReadCloser) {
 	}
 }
 
-func task2(in io.ReadCloser) {
+func task2(in io.Reader) {
 	r := bufio.NewReader(in)
 	marker := make([]rune, 0)
 	pos := 0

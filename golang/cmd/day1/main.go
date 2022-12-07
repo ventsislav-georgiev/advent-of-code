@@ -14,7 +14,7 @@ func main() {
 	aoc.Exec(task1, task2)
 }
 
-func task1(in io.ReadCloser) {
+func task1(in io.Reader) {
 	scanner := bufio.NewScanner(in)
 
 	max := 0
@@ -37,7 +37,7 @@ func task1(in io.ReadCloser) {
 	fmt.Println(max)
 }
 
-func task2(in io.ReadCloser) {
+func task2(in io.Reader) {
 	scanner := bufio.NewScanner(in)
 
 	totals := make([]int, 0, 10)

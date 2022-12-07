@@ -14,7 +14,7 @@ func main() {
 	aoc.Exec(task1, task2)
 }
 
-func task1(in io.ReadCloser) {
+func task1(in io.Reader) {
 	scanner := bufio.NewScanner(in)
 
 	result := 0
@@ -34,7 +34,7 @@ func task1(in io.ReadCloser) {
 	fmt.Println(result)
 }
 
-func task2(in io.ReadCloser) {
+func task2(in io.Reader) {
 	scanner := bufio.NewScanner(in)
 
 	result := 0

@@ -16,7 +16,7 @@ func main() {
 
 var regex *regexp.Regexp = regexp.MustCompile(`move (\d+) from (\d+) to (\d+)`)
 
-func task1(in io.ReadCloser) {
+func task1(in io.Reader) {
 	scanner := bufio.NewScanner(in)
 	stacks := parseStacks(scanner)
 	for scanner.Scan() {
@@ -26,7 +26,7 @@ func task1(in io.ReadCloser) {
 	print(stacks)
 }
 
-func task2(in io.ReadCloser) {
+func task2(in io.Reader) {
 	scanner := bufio.NewScanner(in)
 	stacks := parseStacks(scanner)
 	for scanner.Scan() {
