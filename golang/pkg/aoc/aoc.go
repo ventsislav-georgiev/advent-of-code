@@ -10,7 +10,7 @@ import (
 )
 
 func Exec(tasks ...func(io.Reader)) {
-	day := flag.Int("day", 8, "")
+	day := flag.Int("day", 9, "")
 	taskNumber := flag.Int("task", 2, "")
 	flag.Parse()
 
