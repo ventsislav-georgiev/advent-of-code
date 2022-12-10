@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"math"
-	"strconv"
 
 	"github.com/ventsislav-georgiev/advent-of-code-22/golang/pkg/aoc"
 )
@@ -13,6 +12,8 @@ import (
 func main() {
 	aoc.Exec(solve, solve)
 }
+
+var silent bool
 
 func solve(in io.Reader) {
 	register := 1
@@ -28,7 +29,7 @@ func solve(in io.Reader) {
 		cmd := scanner.Bytes()
 		if cmd[0] == 'a' {
 			op = 2
-			n, _ = strconv.Atoi(string(cmd[5:]))
+			n = aoc.Atoi(cmd[5:])
 		}
 
 		for ; op > 0; op-- {
@@ -41,6 +42,10 @@ func solve(in io.Reader) {
 		}
 
 		register += n
+	}
+
+	if silent {
+		return
 	}
 
 	for _, row := range crt {
@@ -56,9 +61,9 @@ func solve(in io.Reader) {
 func draw(crt *[6][40]rune, cycle, register int) {
 	row := int(math.Ceil(float64(cycle)/40)) - 1
 	col := (cycle - 1) % 40
-	char := '.'
+	char := ' '
 	if col == register || col == register+1 || col == register-1 {
-		char = '#'
+		char = '█'
 	}
 	crt[row][col] = char
 }

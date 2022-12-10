@@ -15,12 +15,28 @@ func Exec(tasks ...func(io.Reader)) {
 	flag.Parse()
 
 	task := tasks[*taskNumber-1]
-	in := getInput(*day)
+	in := GetInput(*day)
 	defer in.Close()
 	task(in)
 }
 
-func getInput(day int) io.ReadCloser {
+func Atoi(s []byte) int {
+	s0 := s
+	if s[0] == '-' || s[0] == '+' {
+		s = s[1:]
+	}
+	n := 0
+	for _, ch := range s {
+		ch -= '0'
+		n = n*10 + int(ch)
+	}
+	if s0[0] == '-' {
+		n = -n
+	}
+	return n
+}
+
+func GetInput(day int) io.ReadCloser {
 	url := fmt.Sprintf("https://adventofcode.com/2022/day/%d/input", day)
 
 	client := &http.Client{}

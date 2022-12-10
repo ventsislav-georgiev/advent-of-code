@@ -10,3 +10,8 @@ or
 make rust skey=$SESSION_KEY day=3 task=1 
 ```
 > `$SESSION_KEY` available on the website in cookie named `session`
+
+## Benchmark
+```sh
+make bench day=10
+```
