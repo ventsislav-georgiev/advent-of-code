@@ -10,7 +10,7 @@ import (
 )
 
 func Exec(tasks ...func(io.Reader)) {
-	day := flag.Int("day", 10, "")
+	day := flag.Int("day", 11, "")
 	taskNumber := flag.Int("task", 2, "")
 	flag.Parse()
 
@@ -32,6 +32,15 @@ func Atoi(s []byte) int {
 	}
 	if s0[0] == '-' {
 		n = -n
+	}
+	return n
+}
+
+func Atoui(s []byte) uint {
+	n := uint(0)
+	for _, ch := range s {
+		ch -= '0'
+		n = n*10 + uint(ch)
 	}
 	return n
 }
