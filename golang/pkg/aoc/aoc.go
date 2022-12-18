@@ -11,7 +11,7 @@ import (
 
 func Exec(tasks ...func(io.Reader)) {
 	day := flag.Int("day", 16, "")
-	taskNumber := flag.Int("task", 1, "")
+	taskNumber := flag.Int("task", 2, "")
 	flag.Parse()
 
 	task := tasks[*taskNumber-1]

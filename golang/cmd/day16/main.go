@@ -18,11 +18,56 @@ func task1(in io.Reader) {
 	graph := parse(in)
 	updateEdges(graph)
 	node := graph["AA"]
-	total := calcRoute(node, map[string]struct{}{}, 30, 0, Total{0, []string{}})
+	totals := calcRoute(node, map[string]struct{}{}, 30, 0, Total{0, []string{}}, false)
+	total := totals[0]
 	fmt.Printf("Total: %d Path: %v\n", total.val, total.path)
 }
 
 func task2(in io.Reader) {
+	graph := parse(in)
+	updateEdges(graph)
+	node := graph["AA"]
+	totals := calcRoute(node, map[string]struct{}{}, 26, 0, Total{0, []string{}}, true)
+
+	// reduce paths to speed up the calc
+	tmptotals := []Total{}
+	for _, total := range totals {
+		if total.val > 1200 { // magic number found by trial and error (any less is slow, any more is giving 0 as result)
+			tmptotals = append(tmptotals, total)
+		}
+	}
+	totals = tmptotals
+
+	max := 0
+	indexes := [2]int{}
+	for idx := 0; idx < len(totals); idx++ {
+		for jdx := idx + 1; jdx < len(totals); jdx++ {
+			use := true
+			p1 := totals[idx].path
+			p2 := totals[jdx].path
+
+		test:
+			for i := 0; i < len(p1); i++ {
+				for j := 0; j < len(p2); j++ {
+					if p1[i] == p2[j] && p1[i] != "AA" {
+						use = false
+						break test
+					}
+				}
+			}
+
+			if m := totals[idx].val + totals[jdx].val; use && m > max {
+				max = m
+				indexes[0] = idx
+				indexes[1] = jdx
+			}
+		}
+	}
+
+	paths := []string{}
+	paths = append(paths, totals[indexes[0]].path...)
+	paths = append(paths, totals[indexes[1]].path...)
+	fmt.Println(max, paths)
 }
 
 type Node struct {
@@ -41,55 +86,51 @@ type Total struct {
 	path []string
 }
 
-func calcRoute(node *Node, active map[string]struct{}, time, steps int, total Total) Total {
-	timeLeft := (time - steps)
-	if timeLeft <= 0 {
-		return total
+func calcRoute(node *Node, active map[string]struct{}, time, steps int, total Total, returnAll bool) []Total {
+	time = (time - steps)
+	if time <= 0 {
+		return []Total{total}
 	}
 
 	totals := make([]Total, 0, len(node.edges)*2)
 
 	for _, edge := range node.edges {
-		if _, ok := active[edge.node.name]; ok {
+		if _, ok := active[edge.node.name]; ok || edge.node.val == 0 {
 			continue
 		}
 
-		if edge.node.val == 0 {
-			continue
-		}
-
-		activeCopy := make(map[string]struct{})
+		activecp := make(map[string]struct{})
 		for k, v := range active {
-			activeCopy[k] = v
+			activecp[k] = v
 		}
-		activeCopy[node.name] = struct{}{}
+		activecp[node.name] = struct{}{}
 
-		newTimeLeft := timeLeft
+		newtime := time
 		if node.val > 0 {
-			newTimeLeft -= 1
+			newtime -= 1
 		}
 
-		newTotal := Total{total.val + (node.val * newTimeLeft), append(total.path, fmt.Sprintf("%s(%d)", node.name, newTimeLeft))}
-		resultTotal := calcRoute(edge.node, activeCopy, newTimeLeft, edge.steps, newTotal)
-		if resultTotal.val > 0 {
-			totals = append(totals, resultTotal)
-		}
+		newtotal := Total{total.val + (node.val * newtime), append(total.path, node.name)}
+		totals = append(totals, calcRoute(edge.node, activecp, newtime, edge.steps, newtotal, returnAll)...)
 	}
 
 	if len(totals) == 0 {
 		if _, ok := active[node.name]; !ok && node.val > 0 {
-			total.val += node.val * (timeLeft - 1)
-			total.path = append(total.path, fmt.Sprintf("%s(%d)", node.name, timeLeft-1))
+			total.val += node.val * (time - 1)
+			total.path = append(total.path, node.name)
 		}
 
-		return total
+		return []Total{total}
 	}
 
-	sort.Slice(totals, func(i, j int) bool {
-		return totals[i].val < totals[j].val
-	})
+	if !returnAll {
+		sort.Slice(totals, func(i, j int) bool {
+			return totals[i].val > totals[j].val
+		})
+		return []Total{totals[0]}
+	}
 
-	return totals[len(totals)-1]
+	return totals
 }
 
 func stepsToNode(src *Node, dest *Node) int {
