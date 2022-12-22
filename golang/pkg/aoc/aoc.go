@@ -4,19 +4,20 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 )
 
 func Exec(tasks ...func(io.Reader)) {
-	day := flag.Int("day", 19, "")
-	taskNumber := flag.Int("task", 2, "")
+	day := flag.Int("day", 20, "")
+	taskNumber := flag.Int("task", 1, "")
 	flag.Parse()
 
 	task := tasks[*taskNumber-1]
 	in := GetInput(*day)
-	defer in.Close()
+	if in != nil {
+		defer in.Close()
+	}
 	task(in)
 }
 
@@ -54,7 +55,7 @@ func GetInput(day int) io.ReadCloser {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatalln(err)
+		return nil
 	}
 
 	return resp.Body
