@@ -31,7 +31,7 @@ func main() {
 	aoc.Exec(task1, task2)
 }
 
-var testMode = true
+var testMode = false
 
 func task1(in io.Reader) {
 	if testMode {
