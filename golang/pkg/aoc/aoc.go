@@ -9,7 +9,7 @@ import (
 )
 
 func Exec(tasks ...func(io.Reader)) {
-	day := flag.Int("day", 24, "")
+	day := flag.Int("day", 25, "")
 	taskNumber := flag.Int("task", 1, "")
 	flag.Parse()
 
@@ -44,6 +44,14 @@ func Atoui(s []byte) uint {
 		n = n*10 + uint(ch)
 	}
 	return n
+}
+
+func Reverse(s []byte) []byte {
+	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
+		s[i], s[j] = s[j], s[i]
+	}
+
+	return s
 }
 
 func GetInput(day int) io.ReadCloser {
