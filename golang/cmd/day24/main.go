@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"io"
-	"math"
 	"strings"
 
 	"github.com/ventsislav-georgiev/advent-of-code-22/golang/pkg/aoc"
@@ -56,29 +55,26 @@ func task2(in io.Reader) {
 }
 
 func findPath(grid *Grid, src Point, dest Point, dist int) *Path {
-	queue := map[Point]*Path{}
+	queue := []*Path{}
+	visited := map[Path]struct{}{}
+	maxLen := (grid.rows - 1) * (grid.cols - 1)
 
-	srcPath := &Path{pos: src, weight: src.dist(dest), dist: dist}
-	queue[src] = srcPath
+	srcPath := &Path{pos: src, dist: dist}
+	queue = append(queue, srcPath)
+	visited[Path{pos: src, dist: srcPath.dist}] = struct{}{}
 
 	var cur *Path
-	for {
-		cur = nil
-		for _, p := range queue {
-			if cur == nil || p.weight < cur.weight {
-				cur = p
-			}
-		}
+	for len(queue) > 0 {
+		cur = queue[0]
+		queue = queue[1:]
 
-		if cur == nil || cur.pos == dest {
+		if cur.pos == dest {
 			break
 		}
 
-		delete(queue, cur.pos)
-
 		adjcells := []Point{cur.pos, cur.pos.add(east), cur.pos.add(south), cur.pos.add(north), cur.pos.add(west)}
 		dist := cur.dist + 1
-		gridMap := grid.getMap(dist)
+		gridMap := grid.getMap(dist, maxLen)
 
 		for _, p := range adjcells {
 			wallCount := gridMap[p]
@@ -91,18 +87,19 @@ func findPath(grid *Grid, src Point, dest Point, dist int) *Path {
 				continue
 			}
 
-			path := &Path{
-				pos:    p,
-				dist:   dist,
-				weight: dist + p.dist(dest),
-				parent: cur,
-			}
-
-			if _, ok := queue[p]; ok && path.weight >= queue[p].weight {
+			if _, ok := visited[Path{pos: p, dist: dist}]; ok {
 				continue
 			}
 
-			queue[p] = path
+			visited[Path{pos: p, dist: dist}] = struct{}{}
+
+			path := &Path{
+				pos:    p,
+				dist:   dist,
+				parent: cur,
+			}
+
+			queue = append(queue, path)
 		}
 	}
 
@@ -135,13 +132,8 @@ type Point struct {
 
 type Path struct {
 	pos    Point
-	weight int
 	dist   int
 	parent *Path
-}
-
-func (p Point) dist(other Point) int {
-	return int(math.Abs(float64(p.row-other.row)) + math.Abs(float64(p.col-other.col)))
 }
 
 func (p Point) add(dir Point) Point {
@@ -157,26 +149,24 @@ func (p *Path) print() {
 
 var mapCache = map[int]map[Point]int{}
 
-func (g *Grid) getMap(steps int) map[Point]int {
+func (g *Grid) getMap(steps int, maxSteps int) map[Point]int {
+	steps = steps % maxSteps
+
 	if gridMap, ok := mapCache[steps]; ok {
 		return gridMap
 	}
 
-	gridMap := map[Point]int{}
-	for k, v := range g.data {
-		gridMap[k] = v
-	}
+	for s := 1; s <= steps; s++ {
+		if _, ok := mapCache[s]; ok {
+			continue
+		}
 
-	bliz := make([]Bliz, len(g.bliz))
-	copy(bliz, g.bliz)
+		for bIdx := 0; bIdx < len(g.bliz); bIdx++ {
+			b := &g.bliz[bIdx]
 
-	for s := steps; s > 0; s-- {
-		for bIdx := 0; bIdx < len(bliz); bIdx++ {
-			b := &bliz[bIdx]
-
-			gridMap[b.pos] -= 1
-			if gridMap[b.pos] < 0 {
-				gridMap[b.pos] = 0
+			g.data[b.pos] -= 1
+			if g.data[b.pos] < 0 {
+				g.data[b.pos] = 0
 			}
 
 			b.pos = b.pos.add(b.dir)
@@ -194,18 +184,23 @@ func (g *Grid) getMap(steps int) map[Point]int {
 				b.pos.col = 1
 			}
 
-			gridMap[b.pos] += 1
+			g.data[b.pos] += 1
 		}
+
+		gridMap := map[Point]int{}
+		for k, v := range g.data {
+			gridMap[k] = v
+		}
+
+		mapCache[steps] = gridMap
 	}
 
 	if testMode {
 		println(steps, "steps")
-		printGrid(gridMap, g.rows, g.cols)
+		printGrid(mapCache[steps], g.rows, g.cols)
 	}
 
-	mapCache[steps] = gridMap
-
-	return gridMap
+	return mapCache[steps]
 }
 
 func parse(in io.Reader) *Grid {
