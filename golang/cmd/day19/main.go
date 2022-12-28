@@ -33,7 +33,6 @@ func task2(in io.Reader) {
 
 	product := 1
 	for _, r := range ans {
-		println(r)
 		product *= r
 	}
 
@@ -50,8 +49,7 @@ func solve(blueprints []Blueprint, quality bool, time int) []int {
 
 		go func() {
 			defer wg.Done()
-			cache := map[Blueprint]int{}
-			r := calc(blueprint, ore, time, cache)
+			r := calc(blueprint, 0)
 			if quality {
 				r *= blueprint.id
 			}
@@ -73,8 +71,9 @@ func solve(blueprints []Blueprint, quality bool, time int) []int {
 	return ans
 }
 
-func calc(b Blueprint, target uint8, maxTime int, cache map[Blueprint]int) int {
+func calc(b Blueprint, target uint8) int {
 	create := false
+
 	switch target {
 	case ore:
 		if b.resouces.ore >= b.cost.oreRobot.ore {
@@ -123,31 +122,28 @@ func calc(b Blueprint, target uint8, maxTime int, cache map[Blueprint]int) int {
 		return b.resouces.geode
 	}
 
-	if r, ok := cache[b]; ok {
-		return r
+	if !create && target != 0 {
+		return calc(b, target)
 	}
 
 	if b.robots.ore >= b.cost.geodeRobot.ore && b.robots.obsidian >= b.cost.geodeRobot.obsidian {
-		r := calc(b, geode, maxTime, cache)
-		cache[b] = r
-		return r
+		return calc(b, geode)
 	}
 
 	r := 0
 	if b.robots.obsidian > 0 {
-		r = max(r, calc(b, geode, maxTime, cache))
+		r = max(r, calc(b, geode))
 	}
 	if b.time > 2 && b.robots.ore < 4 {
-		r = max(r, calc(b, ore, maxTime, cache))
+		r = max(r, calc(b, ore))
 	}
 	if b.time > 3 && b.robots.clay < 8 {
-		r = max(r, calc(b, clay, maxTime, cache))
+		r = max(r, calc(b, clay))
 	}
 	if b.time > 2 && b.robots.clay > 0 && b.robots.obsidian < 8 {
-		r = max(r, calc(b, obsidian, maxTime, cache))
+		r = max(r, calc(b, obsidian))
 	}
 
-	cache[b] = r
 	return r
 }
 
@@ -195,7 +191,7 @@ func max(a ...int) int {
 }
 
 const (
-	ore uint8 = iota
+	ore uint8 = 1 + iota
 	clay
 	obsidian
 	geode
