@@ -9,8 +9,8 @@ import (
 )
 
 func Exec(tasks ...func(io.Reader)) {
-	year := flag.Int("year", 2022, "")
-	day := flag.Int("day", 24, "")
+	year := flag.Int("year", 2019, "")
+	day := flag.Int("day", 03, "")
 	taskNumber := flag.Int("task", 2, "")
 	flag.Parse()
 
@@ -20,6 +20,10 @@ func Exec(tasks ...func(io.Reader)) {
 		defer in.Close()
 	}
 	task(in)
+}
+
+func StrToInt(s string) int {
+	return Atoi([]byte(s))
 }
 
 func Atoi(s []byte) int {
