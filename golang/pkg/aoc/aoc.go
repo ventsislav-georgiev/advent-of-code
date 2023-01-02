@@ -9,12 +9,13 @@ import (
 )
 
 func Exec(tasks ...func(io.Reader)) {
+	year := flag.Int("year", 2022, "")
 	day := flag.Int("day", 24, "")
 	taskNumber := flag.Int("task", 2, "")
 	flag.Parse()
 
 	task := tasks[*taskNumber-1]
-	in := GetInput(*day)
+	in := GetInput(*year, *day)
 	if in != nil {
 		defer in.Close()
 	}
@@ -54,8 +55,8 @@ func Reverse(s []byte) []byte {
 	return s
 }
 
-func GetInput(day int) io.ReadCloser {
-	url := fmt.Sprintf("https://adventofcode.com/2022/day/%d/input", day)
+func GetInput(year, day int) io.ReadCloser {
+	url := fmt.Sprintf("https://adventofcode.com/%d/day/%d/input", year, day)
 
 	client := &http.Client{}
 	req, _ := http.NewRequest(http.MethodGet, url, nil)

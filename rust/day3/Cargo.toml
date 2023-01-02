@@ -1,7 +1,0 @@
-[package]
-name = "aoc-22-day-3"
-version.workspace = true
-edition.workspace = true
-
-[dependencies]
-aoc = { path = "../aoc" }
