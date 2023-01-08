@@ -19,31 +19,9 @@ func task1(in io.Reader) {
 	var maxVisible int
 	var best Asteroid
 	for _, asteroid := range asteroids {
-		visible := 0
-
-		for _, other := range asteroids {
-			if asteroid == other {
-				continue
-			}
-
-			sightAngle := asteroid.Pos.Angle(other.Pos)
-			for _, blocker := range asteroids {
-				if blocker == asteroid || blocker == other {
-					continue
-				}
-
-				if sightAngle == asteroid.Pos.Angle(blocker.Pos) && asteroid.Pos.Distance(blocker.Pos) < asteroid.Pos.Distance(other.Pos) {
-					goto next
-				}
-			}
-
-			visible++
-
-		next:
-		}
-
-		if visible > maxVisible {
-			maxVisible = visible
+		visible := asteroid.GetVisible(asteroids)
+		if len(visible) > maxVisible {
+			maxVisible = len(visible)
 			best = asteroid
 		}
 	}
@@ -55,28 +33,7 @@ func task1(in io.Reader) {
 func task2(in io.Reader) {
 	asteroids := parse(in)
 	asteroid := Asteroid{Pos: Point{x: 37, y: 25}}
-
-	visible := []Asteroid{}
-	for _, other := range asteroids {
-		if asteroid == other {
-			continue
-		}
-
-		sightAngle := asteroid.Pos.Angle(other.Pos)
-		for _, blocker := range asteroids {
-			if blocker == asteroid || blocker == other {
-				continue
-			}
-
-			if sightAngle == asteroid.Pos.Angle(blocker.Pos) && asteroid.Pos.Distance(blocker.Pos) < asteroid.Pos.Distance(other.Pos) {
-				goto next
-			}
-		}
-
-		visible = append(visible, Asteroid{Pos: other.Pos, Angle: &sightAngle})
-
-	next:
-	}
+	visible := asteroid.GetVisible(asteroids)
 
 	degrees90 := math.Pi / 2
 	degrees360 := math.Pi * 2
@@ -116,6 +73,34 @@ func (p Point) Distance(other Point) float64 {
 type Asteroid struct {
 	Pos   Point
 	Angle *float64
+}
+
+func (a Asteroid) GetVisible(asteroids []Asteroid) []Asteroid {
+	visible := []Asteroid{}
+
+	for _, other := range asteroids {
+		if a == other {
+			continue
+		}
+
+		sightAngle := a.Pos.Angle(other.Pos)
+		for _, blocker := range asteroids {
+			if blocker == a || blocker == other {
+				continue
+			}
+
+			if sightAngle == a.Pos.Angle(blocker.Pos) && a.Pos.Distance(blocker.Pos) < a.Pos.Distance(other.Pos) {
+				goto next
+			}
+		}
+
+		other.Angle = &sightAngle
+		visible = append(visible, other)
+
+	next:
+	}
+
+	return visible
 }
 
 func parse(in io.Reader) []Asteroid {
