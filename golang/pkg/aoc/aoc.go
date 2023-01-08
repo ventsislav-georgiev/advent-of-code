@@ -12,7 +12,7 @@ import (
 func Exec(tasks ...func(io.Reader)) {
 	year := flag.Int("year", 2019, "")
 	dayStr := flag.String("day", "10", "")
-	taskNumber := flag.Int("task", 1, "")
+	taskNumber := flag.Int("task", 2, "")
 	flag.Parse()
 
 	task := tasks[*taskNumber-1]
