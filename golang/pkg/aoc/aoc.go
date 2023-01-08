@@ -6,16 +6,18 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 )
 
 func Exec(tasks ...func(io.Reader)) {
 	year := flag.Int("year", 2019, "")
-	day := flag.Int("day", 07, "")
-	taskNumber := flag.Int("task", 2, "")
+	dayStr := flag.String("day", "8", "")
+	taskNumber := flag.Int("task", 1, "")
 	flag.Parse()
 
 	task := tasks[*taskNumber-1]
-	in := GetInput(*year, *day)
+	day := StrToInt(strings.TrimLeft(*dayStr, "0"))
+	in := GetInput(*year, day)
 	if in != nil {
 		defer in.Close()
 	}
