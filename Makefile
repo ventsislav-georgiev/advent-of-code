@@ -10,4 +10,4 @@ rust:
 	@cargo run -q -p aoc-${year}-${day} -- --year=${year} --day=${day} --task=${task}
 
 bench:
-	@go test -bench=. -benchtime=20s -benchmem -run=^$$ ./golang/cmd/day${day}
+	@go test -bench=. -benchtime=20s -benchmem -run=^$$ ./golang/cmd/${year}/${day}
