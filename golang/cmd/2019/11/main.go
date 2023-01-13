@@ -20,25 +20,25 @@ func task1(in io.Reader) {
 func task2(in io.Reader) {
 	panels := solve(in, 1)
 
-	minx, miny, maxx, maxy := 0, 0, 0, 0
+	minx, miny, maxx, maxy := float64(0), float64(0), float64(0), float64(0)
 	for p := range panels {
-		if p.x < minx {
-			minx = p.x
+		if real(p) < minx {
+			minx = real(p)
 		}
-		if p.y < miny {
-			miny = p.y
+		if real(p) > maxx {
+			maxx = real(p)
 		}
-		if p.x > maxx {
-			maxx = p.x
+		if imag(p) < miny {
+			miny = imag(p)
 		}
-		if p.y > maxy {
-			maxy = p.y
+		if imag(p) > maxy {
+			maxy = imag(p)
 		}
 	}
 
-	for y := miny; y <= maxy; y++ {
+	for y := maxy; y >= miny; y-- {
 		for x := minx; x <= maxx; x++ {
-			if panels[Point{x, y}] == 1 {
+			if panels[complex(x, y)] == 1 {
 				print("█")
 			} else {
 				print(" ")
@@ -48,14 +48,14 @@ func task2(in io.Reader) {
 	}
 }
 
-func solve(in io.Reader, start int) map[Point]int {
+func solve(in io.Reader, start int) map[complex128]int {
 	intcode := parse(in)
 	go intcode.run()
 	intcode.in <- start
 
-	panels := map[Point]int{}
-	pos := Point{0, 0}
-	dir := Point{0, -1}
+	panels := map[complex128]int{}
+	pos := complex(0, 0)
+	dir := complex(0, 1)
 
 	for {
 		newcolor, ok := <-intcode.out
@@ -67,13 +67,12 @@ func solve(in io.Reader, start int) map[Point]int {
 
 		rotation := <-intcode.out
 		if rotation == 0 {
-			dir = Point{dir.y, -dir.x}
+			dir *= complex(0, 1)
 		} else {
-			dir = Point{-dir.y, dir.x}
+			dir *= complex(0, -1)
 		}
 
-		pos.x += dir.x
-		pos.y += dir.y
+		pos += dir
 
 		color, ok := panels[pos]
 		if !ok {
@@ -82,10 +81,6 @@ func solve(in io.Reader, start int) map[Point]int {
 
 		intcode.in <- color
 	}
-}
-
-type Point struct {
-	x, y int
 }
 
 type Intcode struct {
