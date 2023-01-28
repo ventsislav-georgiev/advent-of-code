@@ -10,7 +10,7 @@ type Intcode struct {
 	In  chan int
 	Out chan int
 
-	program   []int
+	program   map[int]int
 	index     int
 	reloffset int
 	lastout   int
@@ -158,24 +158,17 @@ func (i *Intcode) loadParam(mode ParamMode, index int) int {
 		idx = i.program[index] + i.reloffset
 	}
 
-	if idx >= len(i.program) {
-		return 0
-	}
-
 	return i.program[idx]
 }
 
 func (i *Intcode) storeParam(mode ParamMode, index, value int) {
 	idx := index
+
 	switch mode {
 	case Position:
 		idx = i.program[index]
 	case Relative:
 		idx = i.program[index] + i.reloffset
-	}
-
-	if idx >= len(i.program) {
-		i.program = append(i.program, make([]int, idx+1-len(i.program))...)
 	}
 
 	i.program[idx] = value
@@ -186,7 +179,7 @@ func ParseIntcode(in io.Reader) *Intcode {
 	scanner.Scan()
 
 	strcode := strings.Split(scanner.Text(), ",")
-	program := make([]int, len(strcode))
+	program := make(map[int]int, len(strcode))
 	for i, s := range strcode {
 		program[i] = StrToInt(s)
 	}
