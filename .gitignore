@@ -3,3 +3,5 @@
 **/target
 **/Cargo.lock
 **/*.rs.bk
+**/debug.txt
+.DS_Store
