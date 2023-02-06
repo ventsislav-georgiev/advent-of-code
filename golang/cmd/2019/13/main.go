@@ -38,7 +38,7 @@ func solve(in io.Reader, screen map[Point]int, quarters *int) int {
 	intcode := aoc.ParseIntcode(in)
 
 	if quarters != nil {
-		intcode.SetProgram(0, *quarters)
+		intcode.Set(0, *quarters)
 	}
 
 	go intcode.Run()

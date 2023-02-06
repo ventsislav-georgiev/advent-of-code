@@ -7,13 +7,13 @@ import (
 )
 
 type Intcode struct {
-	In  chan int
-	Out chan int
+	In      chan int
+	Out     chan int
+	Lastout int
 
 	program   map[int]int
 	index     int
 	reloffset int
-	lastout   int
 	halt      chan int
 }
 
@@ -40,8 +40,8 @@ const (
 	Relative
 )
 
-func (i *Intcode) SetProgram(index int, value int) {
-	i.program[index] = value
+func (i *Intcode) Set(offset int, value int) {
+	i.program[offset] = value
 }
 
 func (i *Intcode) WaitHalt() int {
@@ -59,7 +59,7 @@ func (i *Intcode) Run() {
 		op, pmode1, pmode2, pmode3 := i.loadOpcode()
 		if op == Halt {
 			close(i.Out)
-			i.halt <- i.lastout
+			i.halt <- i.Lastout
 			close(i.halt)
 			return
 		}
@@ -88,7 +88,7 @@ func (i *Intcode) step(op Opcode, pmode1, pmode2, pmode3 ParamMode) {
 
 	case Output:
 		param1 := i.loadParam(pmode1, i.index+1)
-		i.lastout = param1
+		i.Lastout = param1
 		i.Out <- param1
 		i.index += 2
 
