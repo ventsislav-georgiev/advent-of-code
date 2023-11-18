@@ -3,6 +3,7 @@ package aoc
 import (
 	"bufio"
 	"io"
+	"strconv"
 	"strings"
 )
 
@@ -11,10 +12,11 @@ type Intcode struct {
 	Out     chan int
 	Lastout int
 
-	program   map[int]int
-	index     int
-	reloffset int
-	halt      chan int
+	program       map[int]int
+	programBackup map[int]int
+	index         int
+	reloffset     int
+	halt          chan int
 }
 
 type Opcode int
@@ -65,6 +67,21 @@ func (i *Intcode) Run() {
 		}
 
 		i.step(op, pmode1, pmode2, pmode3)
+	}
+}
+
+func (i *Intcode) Reset() *Intcode {
+	program := make(map[int]int, len(i.programBackup))
+	for idx := range i.program {
+		program[idx] = i.programBackup[idx]
+	}
+
+	return &Intcode{
+		program:       program,
+		programBackup: i.programBackup,
+		In:            make(chan int, 1),
+		Out:           make(chan int, 1),
+		halt:          make(chan int, 1),
 	}
 }
 
@@ -136,7 +153,7 @@ func (i *Intcode) step(op Opcode, pmode1, pmode2, pmode3 ParamMode) {
 		i.index += 2
 
 	default:
-		panic("unknown opcode")
+		panic("unknown opcode: " + strconv.Itoa(int(op)))
 	}
 }
 
@@ -184,10 +201,16 @@ func ParseIntcode(in io.Reader) *Intcode {
 		program[i] = StrToInt(s)
 	}
 
+	programBackup := make(map[int]int, len(program))
+	for i := range program {
+		programBackup[i] = program[i]
+	}
+
 	return &Intcode{
-		program: program,
-		In:      make(chan int, 1),
-		Out:     make(chan int, 1),
-		halt:    make(chan int, 1),
+		program:       program,
+		programBackup: programBackup,
+		In:            make(chan int, 1),
+		Out:           make(chan int, 1),
+		halt:          make(chan int, 1),
 	}
 }
