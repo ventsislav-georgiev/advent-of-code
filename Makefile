@@ -1,9 +1,7 @@
-export SESSION_KEY=${skey}
-
 .DEFAULT_GOAL := go
 .PHONY: go
 go:
-	@go run golang/cmd/${year}/${day}/main.go --year=${year} --day=${day} --task=${task}
+	@go run golang/cmd/${year}/${day}/main.go --task=${task}
 
 .PHONY: rust
 rust:
@@ -12,6 +10,10 @@ rust:
 .PHONY: bench
 bench:
 	@go test -bench=. -benchtime=20s -benchmem -run=^$$ ./golang/cmd/${year}/${day}
+
+.PHONY: test
+test:
+	@go test -count=1 ./golang/cmd/${year}/${day}
 
 .PHONY: synacor
 synacor:

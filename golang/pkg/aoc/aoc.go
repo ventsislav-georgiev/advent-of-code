@@ -6,18 +6,21 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"runtime"
 	"strings"
 )
 
 func Exec(tasks ...func(io.Reader)) {
-	year := flag.Int("year", 2019, "")
-	dayStr := flag.String("day", "17", "")
-	taskNumber := flag.Int("task", 2, "")
+	_, file, _, _ := runtime.Caller(1)
+	fileParts := strings.Split(file, "/")
+	year := StrToInt(fileParts[len(fileParts)-3])
+	dayStr := fileParts[len(fileParts)-2]
+	taskNumber := flag.Int("task", 1, "")
 	flag.Parse()
 
 	task := tasks[*taskNumber-1]
-	day := StrToInt(strings.TrimLeft(*dayStr, "0"))
-	in := GetInput(*year, day)
+	day := StrToInt(strings.TrimLeft(dayStr, "0"))
+	in := GetInput(year, day)
 	if in != nil {
 		defer in.Close()
 	}
@@ -70,7 +73,11 @@ func GetInput(year, day int) io.ReadCloser {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil
+		panic(err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		panic(fmt.Errorf("status code: %d", resp.StatusCode))
 	}
 
 	return resp.Body
