@@ -1,3 +1,3 @@
 module github.com/ventsislav-georgiev/advent-of-code
 
-go 1.19
+go 1.20
