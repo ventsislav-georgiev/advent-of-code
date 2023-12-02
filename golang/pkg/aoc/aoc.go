@@ -15,7 +15,7 @@ func Exec(tasks ...func(io.Reader)) {
 	fileParts := strings.Split(file, "/")
 	year := StrToInt(fileParts[len(fileParts)-3])
 	dayStr := fileParts[len(fileParts)-2]
-	taskNumber := flag.Int("task", 1, "")
+	taskNumber := flag.Int("task", 2, "")
 	flag.Parse()
 
 	task := tasks[*taskNumber-1]
