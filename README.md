@@ -1,15 +1,18 @@
 # Advent Of Code
 ref: https://adventofcode.com
 
+
+## Prerequisites
+`$SESSION_KEY` env var is expected. Available on the website in cookie named `session`.
+
 ## Usage
 ```sh
-make go skey=$SESSION_KEY year=2022 day=01 task=2 
+make go year=2022 day=01 task=2 
 ```
 or
 ```sh
-make rust skey=$SESSION_KEY year=2022 day=03 task=1 
+make rust year=2022 day=03 task=1 
 ```
-> `$SESSION_KEY` available on the website in cookie named `session`
 
 ## Benchmark (Golang only)
 ```sh
