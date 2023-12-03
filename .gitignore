@@ -5,3 +5,4 @@
 **/*.rs.bk
 **/debug.txt
 .DS_Store
+_output

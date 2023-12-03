@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := go
 .PHONY: go
 go:
-	@go run golang/cmd/${year}/${day}/main.go --task=${task}
+	@go run golang/cmd/${year}/${day}/main.go --task=${task} --input=${input}
 
 .PHONY: rust
 rust:

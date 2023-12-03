@@ -11,7 +11,7 @@ import (
 var in *bytes.Reader
 
 func init() {
-	input := aoc.GetInput(2019, 11)
+	input := aoc.GetInput("", 2019, 11)
 	b, _ := io.ReadAll(input)
 	input.Close()
 

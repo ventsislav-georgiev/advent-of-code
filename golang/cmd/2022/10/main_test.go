@@ -13,7 +13,7 @@ var in *bytes.Reader
 func init() {
 	silent = true
 
-	input := aoc.GetInput(2022, 10)
+	input := aoc.GetInput("", 2022, 10)
 	b, _ := io.ReadAll(input)
 	input.Close()
 

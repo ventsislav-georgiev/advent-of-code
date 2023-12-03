@@ -15,16 +15,24 @@ func Exec(tasks ...func(io.Reader)) {
 	fileParts := strings.Split(file, "/")
 	year := StrToInt(fileParts[len(fileParts)-3])
 	dayStr := fileParts[len(fileParts)-2]
-	taskNumber := flag.Int("task", 1, "")
+	task := flag.String("task", "", "")
+	input := flag.String("input", "", "")
 	flag.Parse()
 
-	task := tasks[*taskNumber-1]
-	day := StrToInt(strings.TrimLeft(dayStr, "0"))
-	in := GetInput(year, day)
-	if in != nil {
-		defer in.Close()
+	if *task != "" {
+		taskNumber := StrToInt(*task)
+		task := tasks[taskNumber-1]
+		tasks = []func(io.Reader){task}
 	}
-	task(in)
+
+	for _, task := range tasks {
+		day := StrToInt(strings.TrimLeft(dayStr, "0"))
+		in := GetInput(*input, year, day)
+		if in != nil {
+			defer in.Close()
+		}
+		task(in)
+	}
 }
 
 func StrToInt(s string) int {
@@ -64,7 +72,16 @@ func Reverse(s []byte) []byte {
 	return s
 }
 
-func GetInput(year, day int) io.ReadCloser {
+func GetInput(input string, year, day int) io.ReadCloser {
+	if input != "" {
+		file, err := os.Open(input)
+		if err != nil {
+			panic(err)
+		}
+
+		return file
+	}
+
 	url := fmt.Sprintf("https://adventofcode.com/%d/day/%d/input", year, day)
 
 	client := &http.Client{}
