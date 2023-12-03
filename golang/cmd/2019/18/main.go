@@ -241,7 +241,6 @@ func (g *KeysGraph) dfsMinDistToAllKeys() int {
 
 func parse(in io.Reader) [][]string {
 	scanner := bufio.NewScanner(in)
-	scanner.Split(bufio.ScanLines)
 
 	grid := make([][]string, 0)
 	for scanner.Scan() {

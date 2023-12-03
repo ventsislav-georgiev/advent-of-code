@@ -36,7 +36,7 @@ func Atoi(s []byte) int {
 	if s[0] == '-' || s[0] == '+' {
 		s = s[1:]
 	}
-	n := 0
+	var n int
 	for _, ch := range s {
 		ch -= '0'
 		n = n*10 + int(ch)
@@ -48,7 +48,7 @@ func Atoi(s []byte) int {
 }
 
 func Atoui(s []byte) uint {
-	n := uint(0)
+	var n uint
 	for _, ch := range s {
 		ch -= '0'
 		n = n*10 + uint(ch)

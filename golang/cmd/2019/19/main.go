@@ -86,7 +86,6 @@ func task2(in io.Reader) {
 	// .............................###########`
 
 	// 	scanner := bufio.NewScanner(strings.NewReader(input))
-	// 	scanner.Split(bufio.ScanLines)
 
 	// 	y := 0
 	// 	for scanner.Scan() {

@@ -109,7 +109,6 @@ func (g Grid) updateLetters(pos1, pos2, srcPos, destPos image.Point) {
 func parse(in io.Reader) (Grid, image.Point) {
 	grid := Grid{}
 	scanner := bufio.NewScanner(in)
-	scanner.Split(bufio.ScanLines)
 
 	x := 0
 	y := 0

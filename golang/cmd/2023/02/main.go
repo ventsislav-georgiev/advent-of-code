@@ -22,7 +22,6 @@ func task1(in io.Reader) {
 	}
 
 	scanner := bufio.NewScanner(in)
-	scanner.Split(bufio.ScanLines)
 
 	var amount int
 	var sets, color string
@@ -63,7 +62,6 @@ func task2(in io.Reader) {
 	powersSum := 0
 
 	scanner := bufio.NewScanner(in)
-	scanner.Split(bufio.ScanLines)
 
 	var amount int
 	var sets, color string

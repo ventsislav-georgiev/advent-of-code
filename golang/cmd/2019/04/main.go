@@ -23,7 +23,6 @@ func task2(in io.Reader) {
 
 func solve(in io.Reader, allowMultiRepeat bool) {
 	scanner := bufio.NewScanner(in)
-	scanner.Split(bufio.ScanLines)
 
 	var min, max int
 	for scanner.Scan() {

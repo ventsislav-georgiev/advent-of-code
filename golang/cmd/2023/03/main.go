@@ -78,7 +78,6 @@ func task2(in io.Reader) {
 
 func parse(in io.Reader) (symbols map[image.Point]byte, numbers map[image.Point]*uint) {
 	scanner := bufio.NewScanner(in)
-	scanner.Split(bufio.ScanLines)
 
 	xy := image.Point{-1, -1}
 	symbols = map[image.Point]byte{}
