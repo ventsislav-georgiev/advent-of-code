@@ -94,7 +94,7 @@ func parse(in io.Reader) (sources Sources) {
 	scanner := bufio.NewScanner(in)
 	scanner.Split(bufio.ScanBytes)
 
-	seeds := parseNumbers(scanner, '\n')
+	seeds := aoc.ParseNumbers(scanner, '\n')
 	skipLine(scanner)
 	skipLine(scanner)
 
@@ -110,43 +110,10 @@ func parse(in io.Reader) (sources Sources) {
 	return sources
 }
 
-func parseNumbers(scanner *bufio.Scanner, term byte) []uint {
-	var ch byte
-	numbers := []uint{}
-	numParts := []byte{}
-
-	parseNumber := func() {
-		if len(numParts) == 0 {
-			return
-		}
-		numbers = append(numbers, aoc.Atoui(numParts))
-		numParts = numParts[:0]
-	}
-
-	for ch != term {
-		if !scanner.Scan() {
-			parseNumber()
-			break
-		}
-
-		ch = scanner.Bytes()[0]
-
-		if ch >= '0' && ch <= '9' {
-			numParts = append(numParts, ch)
-		}
-
-		if ch == ' ' || ch == term {
-			parseNumber()
-		}
-	}
-
-	return numbers
-}
-
 func parseMap(scanner *bufio.Scanner) []Range {
 	mapping := [][]uint{}
 	for {
-		numbers := parseNumbers(scanner, '\n')
+		numbers := aoc.ParseNumbers(scanner, '\n')
 		if len(numbers) == 0 {
 			skipLine(scanner)
 			break

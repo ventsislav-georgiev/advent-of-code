@@ -1,6 +1,7 @@
 package aoc
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"io"
@@ -98,4 +99,47 @@ func GetInput(input string, year, day int) io.ReadCloser {
 	}
 
 	return resp.Body
+}
+
+func ParseNumbers(scanner *bufio.Scanner, term byte) []uint {
+	var ch byte
+	numbers := []uint{}
+	numParts := []byte{}
+
+	parseNumber := func() {
+		if len(numParts) == 0 {
+			return
+		}
+		numbers = append(numbers, Atoui(numParts))
+		numParts = numParts[:0]
+	}
+
+	for ch != term {
+		if !scanner.Scan() {
+			parseNumber()
+			break
+		}
+
+		ch = scanner.Bytes()[0]
+
+		if ch >= '0' && ch <= '9' {
+			numParts = append(numParts, ch)
+		}
+
+		if ch == ' ' || ch == term {
+			parseNumber()
+		}
+	}
+
+	return numbers
+}
+
+func RemoveSpaces(str []byte) []byte {
+	out := make([]byte, 0, len(str))
+	for _, ch := range str {
+		if ch != ' ' {
+			out = append(out, ch)
+		}
+	}
+	return out
 }
