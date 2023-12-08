@@ -143,3 +143,15 @@ func RemoveSpaces(str []byte) []byte {
 	}
 	return out
 }
+
+func LeastCommonDenominator(a, b uint) uint {
+	return a * b / GreatestCommonDivisor(a, b)
+}
+
+func GreatestCommonDivisor(a, b uint) uint {
+	if b == 0 {
+		return a
+	}
+
+	return GreatestCommonDivisor(b, a%b)
+}
