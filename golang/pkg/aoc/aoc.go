@@ -65,7 +65,7 @@ func Atoui(s []byte) uint {
 	return n
 }
 
-func Reverse(s []byte) []byte {
+func Reverse[T any](s []T) []T {
 	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
 		s[i], s[j] = s[j], s[i]
 	}
@@ -134,14 +134,46 @@ func ParseNumbers(scanner *bufio.Scanner, term byte) []uint {
 	return numbers
 }
 
+func SplitBytes(str []byte, sep byte) [][]byte {
+	out := [][]byte{}
+	part := []byte{}
+
+	for _, ch := range str {
+		if ch == '\n' {
+			continue
+		}
+
+		if ch != ' ' {
+			part = append(part, ch)
+		} else {
+			out = append(out, part)
+			part = []byte{}
+		}
+	}
+
+	out = append(out, part)
+
+	return out
+}
+
 func RemoveSpaces(str []byte) []byte {
 	out := make([]byte, 0, len(str))
+
 	for _, ch := range str {
 		if ch != ' ' {
 			out = append(out, ch)
 		}
 	}
+
 	return out
+}
+
+func LastIdx[T any](arr []T) int {
+	return len(arr) - 1
+}
+
+func LastElement[T any](arr []T) T {
+	return arr[len(arr)-1]
 }
 
 func LeastCommonDenominator(a, b uint) uint {
