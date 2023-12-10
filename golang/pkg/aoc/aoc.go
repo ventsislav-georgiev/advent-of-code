@@ -9,6 +9,8 @@ import (
 	"os"
 	"runtime"
 	"strings"
+
+	"golang.org/x/exp/constraints"
 )
 
 func Exec(tasks ...func(io.Reader)) {
@@ -54,6 +56,14 @@ func Atoi(s []byte) int {
 		n = -n
 	}
 	return n
+}
+
+func ToKeyXY(xy [2]int) uint64 {
+	return ToKey(xy[0], xy[1])
+}
+
+func ToKey(x, y int) uint64 {
+	return uint64(x)<<16 + uint64(y)
 }
 
 func Atoui(s []byte) uint {
@@ -168,12 +178,40 @@ func RemoveSpaces(str []byte) []byte {
 	return out
 }
 
+func SkipLine(scanner *bufio.Scanner) {
+	for scanner.Scan() {
+		if scanner.Bytes()[0] == '\n' {
+			break
+		}
+	}
+}
+
 func LastIdx[T any](arr []T) int {
 	return len(arr) - 1
 }
 
 func LastElement[T any](arr []T) T {
 	return arr[len(arr)-1]
+}
+
+func Max[T constraints.Ordered](values ...T) T {
+	max := values[0]
+	for _, v := range values[1:] {
+		if v > max {
+			max = v
+		}
+	}
+	return max
+}
+
+func Min[T constraints.Ordered](values ...T) T {
+	min := values[0]
+	for _, v := range values[1:] {
+		if v < min {
+			min = v
+		}
+	}
+	return min
 }
 
 func LeastCommonDenominator(a, b uint) uint {
