@@ -25,18 +25,7 @@ func task1(in io.Reader) {
 		}
 
 		dist++
-		var nextNode *Node
-
-		if curNode.North != nil && curNode.North != prevNode {
-			nextNode = curNode.North
-		} else if curNode.South != nil && curNode.South != prevNode {
-			nextNode = curNode.South
-		} else if curNode.West != nil && curNode.West != prevNode {
-			nextNode = curNode.West
-		} else if curNode.East != nil && curNode.East != prevNode {
-			nextNode = curNode.East
-		}
-
+		nextNode := curNode.MoveNext(prevNode)
 		prevNode = curNode
 		curNode = nextNode
 	}
@@ -57,18 +46,7 @@ func task2(in io.Reader) {
 			break
 		}
 
-		var nextNode *Node
-
-		if curNode.North != nil && curNode.North != prevNode {
-			nextNode = curNode.North
-		} else if curNode.South != nil && curNode.South != prevNode {
-			nextNode = curNode.South
-		} else if curNode.West != nil && curNode.West != prevNode {
-			nextNode = curNode.West
-		} else if curNode.East != nil && curNode.East != prevNode {
-			nextNode = curNode.East
-		}
-
+		nextNode := curNode.MoveNext(prevNode)
 		prevNode = curNode
 		loop = append(loop, curNode.Point)
 		loopCache[curNode.Point] = struct{}{}
@@ -78,7 +56,7 @@ func task2(in io.Reader) {
 	enclosedTilesCount := 0
 	for _, node := range grid {
 		if _, ok := loopCache[node.Point]; !ok {
-			if isPointInsideLoop(node.Point, loop) {
+			if aoc.IsPointInsideLoop(node.Point, loop) {
 				enclosedTilesCount++
 			}
 		}
@@ -96,23 +74,20 @@ type Node struct {
 	South *Node
 }
 
-func isPointInsideLoop(tile image.Point, loop []image.Point) bool {
-	intersections := 0
+func (n *Node) MoveNext(prevNode *Node) *Node {
+	var nextNode *Node
 
-	for i := 0; i < len(loop); i++ {
-		p1 := loop[i]
-		p2 := loop[(i+1)%len(loop)]
-
-		if (p1.Y > tile.Y) != (p2.Y > tile.Y) {
-			intersectX := (p2.X-p1.X)*(tile.Y-p1.Y)/(p2.Y-p1.Y) + p1.X
-
-			if tile.X < intersectX {
-				intersections++
-			}
-		}
+	if n.North != nil && n.North != prevNode {
+		nextNode = n.North
+	} else if n.South != nil && n.South != prevNode {
+		nextNode = n.South
+	} else if n.West != nil && n.West != prevNode {
+		nextNode = n.West
+	} else if n.East != nil && n.East != prevNode {
+		nextNode = n.East
 	}
 
-	return intersections%2 == 1
+	return nextNode
 }
 
 func parse(in io.Reader) (startNode *Node, grid map[uint64]*Node) {
