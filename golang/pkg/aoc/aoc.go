@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"image"
 	"io"
 	"net/http"
 	"os"
@@ -11,6 +12,10 @@ import (
 	"strings"
 
 	"golang.org/x/exp/constraints"
+)
+
+var (
+	Directions = []image.Point{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}
 )
 
 func Exec(tasks ...func(io.Reader)) {
@@ -214,6 +219,17 @@ func Min[T constraints.Ordered](values ...T) T {
 	return min
 }
 
+func ReadMatrix(in io.Reader) [][]byte {
+	scanner := bufio.NewScanner(in)
+	matrix := make([][]byte, 0)
+
+	for scanner.Scan() {
+		matrix = append(matrix, []byte(string(scanner.Bytes())))
+	}
+
+	return matrix
+}
+
 func LeastCommonDenominator(a, b uint) uint {
 	return a * b / GreatestCommonDivisor(a, b)
 }
@@ -224,4 +240,16 @@ func GreatestCommonDivisor(a, b uint) uint {
 	}
 
 	return GreatestCommonDivisor(b, a%b)
+}
+
+func ManhattanDistance(a, b image.Point) int {
+	return Abs(a.X-b.X) + Abs(a.Y-b.Y)
+}
+
+func Abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+
+	return x
 }
