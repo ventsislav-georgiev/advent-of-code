@@ -230,6 +230,16 @@ func ReadMatrix(in io.Reader) [][]byte {
 	return matrix
 }
 
+func Hash(str string) string {
+	var hash [32]rune
+
+	for i, ch := range str {
+		hash[i%32] ^= ch
+	}
+
+	return fmt.Sprintf("%x", string(hash[:]))
+}
+
 func LeastCommonDenominator(a, b uint) uint {
 	return a * b / GreatestCommonDivisor(a, b)
 }
