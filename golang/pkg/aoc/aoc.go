@@ -1,21 +1,13 @@
 package aoc
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
-	"image"
 	"io"
 	"net/http"
 	"os"
 	"runtime"
 	"strings"
-
-	"golang.org/x/exp/constraints"
-)
-
-var (
-	Directions = []image.Point{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}
 )
 
 func Exec(tasks ...func(io.Reader)) {
@@ -41,51 +33,6 @@ func Exec(tasks ...func(io.Reader)) {
 		}
 		task(in)
 	}
-}
-
-func StrToInt(s string) int {
-	return Atoi([]byte(s))
-}
-
-func Atoi(s []byte) int {
-	s0 := s
-	if s[0] == '-' || s[0] == '+' {
-		s = s[1:]
-	}
-	var n int
-	for _, ch := range s {
-		ch -= '0'
-		n = n*10 + int(ch)
-	}
-	if s0[0] == '-' {
-		n = -n
-	}
-	return n
-}
-
-func ToKeyXY(xy [2]int) uint64 {
-	return ToKey(xy[0], xy[1])
-}
-
-func ToKey(x, y int) uint64 {
-	return uint64(x)<<16 + uint64(y)
-}
-
-func Atoui(s []byte) uint {
-	var n uint
-	for _, ch := range s {
-		ch -= '0'
-		n = n*10 + uint(ch)
-	}
-	return n
-}
-
-func Reverse[T any](s []T) []T {
-	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
-		s[i], s[j] = s[j], s[i]
-	}
-
-	return s
 }
 
 func GetInput(input string, year, day int) io.ReadCloser {
@@ -114,152 +61,4 @@ func GetInput(input string, year, day int) io.ReadCloser {
 	}
 
 	return resp.Body
-}
-
-func ParseNumbers(scanner *bufio.Scanner, term byte) []uint {
-	var ch byte
-	numbers := []uint{}
-	numParts := []byte{}
-
-	parseNumber := func() {
-		if len(numParts) == 0 {
-			return
-		}
-		numbers = append(numbers, Atoui(numParts))
-		numParts = numParts[:0]
-	}
-
-	for ch != term {
-		if !scanner.Scan() {
-			parseNumber()
-			break
-		}
-
-		ch = scanner.Bytes()[0]
-
-		if ch >= '0' && ch <= '9' {
-			numParts = append(numParts, ch)
-		}
-
-		if ch == ' ' || ch == term {
-			parseNumber()
-		}
-	}
-
-	return numbers
-}
-
-func SplitBytes(str []byte, sep byte) [][]byte {
-	out := [][]byte{}
-	part := []byte{}
-
-	for _, ch := range str {
-		if ch == '\n' {
-			continue
-		}
-
-		if ch != ' ' {
-			part = append(part, ch)
-		} else {
-			out = append(out, part)
-			part = []byte{}
-		}
-	}
-
-	out = append(out, part)
-
-	return out
-}
-
-func RemoveSpaces(str []byte) []byte {
-	out := make([]byte, 0, len(str))
-
-	for _, ch := range str {
-		if ch != ' ' {
-			out = append(out, ch)
-		}
-	}
-
-	return out
-}
-
-func SkipLine(scanner *bufio.Scanner) {
-	for scanner.Scan() {
-		if scanner.Bytes()[0] == '\n' {
-			break
-		}
-	}
-}
-
-func LastIdx[T any](arr []T) int {
-	return len(arr) - 1
-}
-
-func LastElement[T any](arr []T) T {
-	return arr[len(arr)-1]
-}
-
-func Max[T constraints.Ordered](values ...T) T {
-	max := values[0]
-	for _, v := range values[1:] {
-		if v > max {
-			max = v
-		}
-	}
-	return max
-}
-
-func Min[T constraints.Ordered](values ...T) T {
-	min := values[0]
-	for _, v := range values[1:] {
-		if v < min {
-			min = v
-		}
-	}
-	return min
-}
-
-func ReadMatrix(in io.Reader) [][]byte {
-	scanner := bufio.NewScanner(in)
-	matrix := make([][]byte, 0)
-
-	for scanner.Scan() {
-		matrix = append(matrix, []byte(string(scanner.Bytes())))
-	}
-
-	return matrix
-}
-
-func Hash(str string) string {
-	var hash [32]rune
-
-	for i, ch := range str {
-		hash[i%32] ^= ch
-	}
-
-	return fmt.Sprintf("%x", string(hash[:]))
-}
-
-func LeastCommonDenominator(a, b uint) uint {
-	return a * b / GreatestCommonDivisor(a, b)
-}
-
-func GreatestCommonDivisor(a, b uint) uint {
-	if b == 0 {
-		return a
-	}
-
-	return GreatestCommonDivisor(b, a%b)
-}
-
-func ManhattanDistance(a, b image.Point) int {
-	return Abs(a.X-b.X) + Abs(a.Y-b.Y)
-}
-
-func Abs(x int) int {
-	if x < 0 {
-		return -x
-	}
-
-	return x
 }
