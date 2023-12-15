@@ -45,6 +45,16 @@ func GetInput(input string, year, day int) io.ReadCloser {
 		return file
 	}
 
+	cacheFile := fmt.Sprintf("/tmp/aoc-%d-%d", year, day)
+	if _, err := os.Stat(cacheFile); err == nil {
+		file, err := os.Open(cacheFile)
+		if err != nil {
+			panic(err)
+		}
+
+		return file
+	}
+
 	url := fmt.Sprintf("https://adventofcode.com/%d/day/%d/input", year, day)
 
 	client := &http.Client{}
@@ -60,5 +70,17 @@ func GetInput(input string, year, day int) io.ReadCloser {
 		panic(fmt.Errorf("status code: %d", resp.StatusCode))
 	}
 
-	return resp.Body
+	// cache to /tmp
+	file, err := os.Create(cacheFile)
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = io.Copy(file, resp.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	file.Seek(0, 0)
+	return file
 }
