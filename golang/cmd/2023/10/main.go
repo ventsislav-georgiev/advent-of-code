@@ -56,7 +56,7 @@ func task2(in io.Reader) {
 	enclosedTilesCount := 0
 	for _, node := range grid {
 		if _, ok := loopCache[node.Point]; !ok {
-			if aoc.IsPointInsideLoop(node.Point, loop) {
+			if aoc.IsPointInsideLoop(node.Point, loop, false) {
 				enclosedTilesCount++
 			}
 		}
