@@ -3,10 +3,17 @@ package aoc
 import "image"
 
 var (
-	DirLeft    = image.Pt(-1, 0)
-	DirRight   = image.Pt(1, 0)
-	DirUp      = image.Pt(0, -1)
-	DirDown    = image.Pt(0, 1)
+	MoveLeft   = image.Pt(-1, 0)
+	MoveRight  = image.Pt(1, 0)
+	MoveUp     = image.Pt(0, -1)
+	MoveDown   = image.Pt(0, 1)
 	PosNone    = image.Pt(-1, -1)
-	Directions = []image.Point{DirLeft, DirRight, DirUp, DirDown}
+	Directions = []image.Point{MoveLeft, MoveRight, MoveUp, MoveDown}
+)
+
+const (
+	DirUp = iota + 1
+	DirDown
+	DirLeft
+	DirRight
 )

@@ -12,13 +12,13 @@ func main() {
 }
 
 func task1(in io.Reader) {
-	matrix := aoc.ReadMatrix(in)
+	matrix := aoc.ReadMatrixAsBytes(in).Rows
 	tiltNorth(matrix)
 	fmt.Println(calcLoad(matrix))
 }
 
 func task2(in io.Reader) {
-	matrix := aoc.ReadMatrix(in)
+	matrix := aoc.ReadMatrixAsBytes(in).Rows
 
 	totalCycles := 1_000_000_000
 	visited := map[string]int{}

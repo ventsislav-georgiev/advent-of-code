@@ -25,7 +25,7 @@ func task2(in io.Reader) {
 }
 
 func getDistances(in io.Reader, expandRate int) (map[[2]image.Point]int, int) {
-	matrix := aoc.ReadMatrix(in)
+	matrix := aoc.ReadMatrixAsBytes(in).Rows
 	points := getPoints(matrix)
 	points = shiftPoints(matrix, points, expandRate-1)
 
