@@ -105,3 +105,12 @@ func Atoui(s []byte) uint {
 	}
 	return n
 }
+
+func ListContains(list []string, item string) bool {
+	for _, listItem := range list {
+		if listItem == item {
+			return true
+		}
+	}
+	return false
+}
