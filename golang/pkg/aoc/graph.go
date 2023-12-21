@@ -22,10 +22,10 @@ type Path[T Node] struct {
 	Dist int
 }
 
-func (g *Graph[T]) Dijkstra(destMatchPredicate func(a, b *Item[Path[T]]) bool) *Item[Path[T]] {
+func (g *Graph[T]) Traverse() (pathsMap map[T]*Item[Path[T]]) {
 	start := Path[T]{Node: g.StartNode, Dist: 0}
 	visited := map[T]struct{}{}
-	itemsMap := make(map[T]*Item[Path[T]])
+	pathsMap = make(map[T]*Item[Path[T]])
 	queue := NewPriorityQueue[Path[T]]()
 
 	getWeight := g.GetWeight
@@ -34,7 +34,7 @@ func (g *Graph[T]) Dijkstra(destMatchPredicate func(a, b *Item[Path[T]]) bool) *
 	}
 
 	enqueueOrUpdate := func(path Path[T]) {
-		prevItem, found := itemsMap[path.Node]
+		prevItem, found := pathsMap[path.Node]
 
 		if found && prevItem.Val.Dist <= path.Dist {
 			return
@@ -53,7 +53,7 @@ func (g *Graph[T]) Dijkstra(destMatchPredicate func(a, b *Item[Path[T]]) bool) *
 				return path.Dist
 			},
 		}
-		itemsMap[path.Node] = item
+		pathsMap[path.Node] = item
 		queue.PushItem(item)
 	}
 
@@ -84,14 +84,7 @@ func (g *Graph[T]) Dijkstra(destMatchPredicate func(a, b *Item[Path[T]]) bool) *
 		}
 	}
 
-	var bestPath *Item[Path[T]]
-	for _, path := range itemsMap {
-		if destMatchPredicate(bestPath, path) {
-			bestPath = path
-		}
-	}
-
-	return bestPath
+	return
 }
 
 type Pos struct {
@@ -151,4 +144,15 @@ func (p Pos) MoveForward() Pos {
 	}
 
 	panic("Only up, down, left and right directions are allowed")
+}
+
+func FindPath[T Node](pathsMap map[T]*Item[Path[T]], pathMatchPredicate func(a, b *Item[Path[T]]) bool) *Item[Path[T]] {
+	var bestPath *Item[Path[T]]
+	for _, path := range pathsMap {
+		if pathMatchPredicate(bestPath, path) {
+			bestPath = path
+		}
+	}
+
+	return bestPath
 }

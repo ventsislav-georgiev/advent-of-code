@@ -1,6 +1,10 @@
 package aoc
 
-import "bufio"
+import (
+	"bufio"
+	"fmt"
+	"strings"
+)
 
 func SplitBytes(str []byte, sep byte) [][]byte {
 	out := [][]byte{}
@@ -113,4 +117,27 @@ func ListContains(list []string, item string) bool {
 		}
 	}
 	return false
+}
+
+func ListDelete(list []string, item string) ([]string, bool) {
+	for i, listItem := range list {
+		if listItem == item {
+			return append(list[:i], list[i+1:]...), true
+		}
+	}
+	return list, false
+}
+
+func JoinStrings(strs ...string) string {
+	return strings.Join(strs, "")
+}
+
+func ToStr[T any](val T) string {
+	var vAny interface{} = val
+	switch v := vAny.(type) {
+	case byte:
+		return string(v)
+	default:
+		return fmt.Sprintf("%v", v)
+	}
 }

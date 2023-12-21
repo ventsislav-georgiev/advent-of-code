@@ -17,7 +17,8 @@ func task1(in io.Reader) {
 	maxForward := 3
 
 	graph, dest := parse(in, minForward, maxForward)
-	bestPath := graph.Dijkstra(func(a, b *aoc.Item[aoc.Path[State]]) bool {
+	pathsMap := graph.Traverse()
+	bestPath := aoc.FindPath[State](pathsMap, func(a, b *aoc.Item[aoc.Path[State]]) bool {
 		return b.Val.Node.pos.XY == dest && (a == nil || b.Val.Dist < a.Val.Dist)
 	})
 
@@ -29,7 +30,8 @@ func task2(in io.Reader) {
 	maxForward := 10
 
 	graph, dest := parse(in, minForward, maxForward)
-	bestPath := graph.Dijkstra(func(a, b *aoc.Item[aoc.Path[State]]) bool {
+	pathsMap := graph.Traverse()
+	bestPath := aoc.FindPath[State](pathsMap, func(a, b *aoc.Item[aoc.Path[State]]) bool {
 		return b.Val.Node.pos.XY == dest && (a == nil || b.Val.Dist < a.Val.Dist && b.Val.Node.forwardSteps >= minForward)
 	})
 
@@ -46,7 +48,7 @@ func (n State) Pos() image.Point {
 }
 
 func parse(in io.Reader, minForward, maxForward int) (graph *aoc.Graph[State], dest image.Point) {
-	matrix := aoc.ReadMatrixPositionsAs[int](in, func(ch byte) int {
+	matrix := aoc.ReadMatrixPositionsAs[int](in, func(ch byte, x, y int) int {
 		return int(ch - '0')
 	})
 

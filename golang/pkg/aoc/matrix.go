@@ -2,16 +2,23 @@ package aoc
 
 import (
 	"bufio"
+	"fmt"
 	"image"
 	"io"
 )
+
+type Matrix[T any] struct {
+	Rows   [][]T
+	Map    map[image.Point]T
+	Bounds image.Rectangle
+}
 
 type MatrixType struct {
 	Rows bool
 	Map  bool
 }
 
-func ReadMatrix[T any](in io.Reader, typ MatrixType, parse func(byte) T) *Matrix[T] {
+func ReadMatrix[T any](in io.Reader, typ MatrixType, parse func(ch byte, x, y int) T) *Matrix[T] {
 	scanner := bufio.NewScanner(in)
 
 	var rows [][]T
@@ -44,7 +51,7 @@ func ReadMatrix[T any](in io.Reader, typ MatrixType, parse func(byte) T) *Matrix
 		}
 
 		for x, ch := range line {
-			val := parse(ch)
+			val := parse(ch, x, y)
 
 			if typ.Rows {
 				row = append(row, val)
@@ -72,24 +79,26 @@ func ReadMatrix[T any](in io.Reader, typ MatrixType, parse func(byte) T) *Matrix
 	return &Matrix[T]{Rows: rows, Bounds: bounds, Map: posMap}
 }
 
-func ReadMatrixAs[T any](in io.Reader, parse func(byte) T) *Matrix[T] {
+var (
+	readAsByte = func(ch byte, x, y int) byte {
+		return ch
+	}
+)
+
+func ReadMatrixAs[T any](in io.Reader, parse func(ch byte, x, y int) T) *Matrix[T] {
 	return ReadMatrix[T](in, MatrixType{Rows: true}, parse)
 }
 
-func ReadMatrixPositionsAs[T any](in io.Reader, parse func(byte) T) *Matrix[T] {
+func ReadMatrixPositionsAs[T any](in io.Reader, parse func(ch byte, x, y int) T) *Matrix[T] {
 	return ReadMatrix[T](in, MatrixType{Map: true}, parse)
 }
 
 func ReadMatrixAsBytes(in io.Reader) *Matrix[byte] {
-	return ReadMatrix[byte](in, MatrixType{Rows: true}, func(ch byte) byte {
-		return ch
-	})
+	return ReadMatrix[byte](in, MatrixType{Rows: true}, readAsByte)
 }
 
-type Matrix[T any] struct {
-	Rows   [][]T
-	Map    map[image.Point]T
-	Bounds image.Rectangle
+func ReadMatrixPositionsAsBytes(in io.Reader) *Matrix[byte] {
+	return ReadMatrix[byte](in, MatrixType{Map: true}, readAsByte)
 }
 
 func (m *Matrix[T]) Print() {
@@ -100,9 +109,9 @@ func (m *Matrix[T]) Print() {
 
 	for _, row := range m.Rows {
 		for _, val := range row {
-			print(val)
+			fmt.Print(ToStr(val))
 		}
-		println()
+		fmt.Println()
 	}
 }
 
@@ -115,8 +124,26 @@ func (m *Matrix[T]) printWithMap() {
 		for x := 0; x < m.Bounds.Max.X; x++ {
 			pos := image.Pt(x, y)
 			val := m.Map[pos]
-			print(val)
+			fmt.Print(ToStr(val))
 		}
 		println()
 	}
+}
+
+func (m *Matrix[T]) Get(pos image.Point, repeatable bool) T {
+	var none T
+
+	if !pos.In(m.Bounds) {
+		if !repeatable {
+			return none
+		} else {
+			pos = pos.Mod(m.Bounds)
+		}
+	}
+
+	if m.Map != nil {
+		return m.Map[pos]
+	}
+
+	return m.Rows[pos.Y][pos.X]
 }
