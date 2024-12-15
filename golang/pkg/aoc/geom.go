@@ -69,3 +69,12 @@ func CalcSimplePolygonArea(points []image.Point) float64 {
 
 	return 0.5 * area
 }
+
+func CheckPointsOverlap(point1, point2 image.Point) bool {
+	if (point1.X >= point2.X && point1.X <= point2.X) || (point2.X >= point1.X && point2.X <= point1.X) {
+		if (point1.Y >= point2.Y && point1.Y <= point2.Y) || (point2.Y >= point1.Y && point2.Y <= point1.Y) {
+			return true
+		}
+	}
+	return false
+}

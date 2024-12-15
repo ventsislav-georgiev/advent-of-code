@@ -55,11 +55,15 @@ func GetInput(input string, year, day int) io.ReadCloser {
 		return file
 	}
 
+	homeDir, _ := os.UserHomeDir()
+	aocFile := homeDir + "/.aoc"
+	aocSession, _ := os.ReadFile(aocFile)
+
 	url := fmt.Sprintf("https://adventofcode.com/%d/day/%d/input", year, day)
 
 	client := &http.Client{}
 	req, _ := http.NewRequest(http.MethodGet, url, nil)
-	req.AddCookie(&http.Cookie{Name: "session", Value: os.Getenv("SESSION_KEY")})
+	req.AddCookie(&http.Cookie{Name: "session", Value: string(aocSession)})
 
 	resp, err := client.Do(req)
 	if err != nil {
