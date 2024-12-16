@@ -81,6 +81,43 @@ func ParseNumbers(scanner *bufio.Scanner, term byte) []uint {
 	return numbers
 }
 
+func ParseNumber(scanner *bufio.Scanner, term byte) (uint, bool) {
+	var ch byte
+	var number uint
+	numParts := []byte{}
+
+	parseNumber := func() {
+		if len(numParts) == 0 {
+			return
+		}
+
+		number = Atoui(numParts)
+		numParts = numParts[:0]
+	}
+
+	for ch != term {
+		if !scanner.Scan() {
+			parseNumber()
+			break
+		}
+
+		ch = scanner.Bytes()[0]
+		if ch >= '0' && ch <= '9' {
+			numParts = append(numParts, ch)
+			continue
+		}
+
+		if ch == term {
+			parseNumber()
+			break
+		} else {
+			return 0, false
+		}
+	}
+
+	return number, true
+}
+
 func StrToInt(s string) int {
 	return Atoi([]byte(s))
 }
