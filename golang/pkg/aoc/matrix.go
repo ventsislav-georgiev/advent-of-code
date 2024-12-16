@@ -83,6 +83,9 @@ var (
 	readAsByte = func(ch byte, x, y int) byte {
 		return ch
 	}
+	readAsRune = func(ch byte, x, y int) rune {
+		return rune(ch)
+	}
 )
 
 func ReadMatrixAs[T any](in io.Reader, parse func(ch byte, x, y int) T) *Matrix[T] {
@@ -95,6 +98,10 @@ func ReadMatrixPositionsAs[T any](in io.Reader, parse func(ch byte, x, y int) T)
 
 func ReadMatrixAsBytes(in io.Reader) *Matrix[byte] {
 	return ReadMatrix[byte](in, MatrixType{Rows: true}, readAsByte)
+}
+
+func ReadMatrixAsRunes(in io.Reader) *Matrix[rune] {
+	return ReadMatrix[rune](in, MatrixType{Rows: true}, readAsRune)
 }
 
 func ReadMatrixPositionsAsBytes(in io.Reader) *Matrix[byte] {
